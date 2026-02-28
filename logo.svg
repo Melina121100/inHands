@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_x3C_Livello_x3E_" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2143.56 786.44">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        font-family: IBMPlexMono-MediumItalic, 'IBM Plex Mono';
+        font-size: 395.55px;
+        font-style: italic;
+        font-weight: 500;
+        stroke-width: 2.3px;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        stroke: #1e1e1c;
+      }
+
+      .cls-2 {
+        stroke-miterlimit: 10;
+        stroke-width: 2.6px;
+      }
+
+      .cls-2, .cls-3 {
+        fill: none;
+      }
+
+      .cls-3 {
+        stroke-width: 2.32px;
+      }
+
+      .cls-4 {
+        fill: #020206;
+        font-family: Array-Regular, Array;
+        font-size: 443.42px;
+      }
+
+      .cls-5 {
+        fill: #1e1e1c;
+      }
+    </style>
+  </defs>
+  <text class="cls-4" transform="translate(115.95 424.47)"><tspan x="0" y="0">CLENCHED </tspan></text>
+  <g>
+    <text class="cls-1" transform="translate(1014.28 633.16)"><tspan x="0" y="0">Soul</tspan></text>
+    <polyline class="cls-2" points="1386.59 420.63 1462.37 529.5 1386.59 630.64 1286.26 604.21 1286.26 481.96 1386.59 420.63"/>
+    <polyline class="cls-3" points="1233.22 405.7 1131.05 350.01 1054.39 460.42 1206.87 499.12 1190.45 610.55 1122.42 600 1039.81 613.91"/>
+    <circle class="cls-5" cx="1131.77" cy="350.95" r="5.33"/>
+    <circle class="cls-5" cx="1205.81" cy="498.98" r="5.33"/>
+    <circle class="cls-5" cx="1193.24" cy="612.48" r="5.33"/>
+    <circle class="cls-5" cx="1120.17" cy="600.15" r="5.33"/>
+    <circle class="cls-5" cx="1386.01" cy="420.63" r="5.33"/>
+    <circle class="cls-5" cx="1557.54" cy="424.01" r="5.33"/>
+    <circle class="cls-5" cx="1685.99" cy="424.01" r="5.33"/>
+    <circle class="cls-5" cx="1463.82" cy="528.5" r="5.33"/>
+    <circle class="cls-5" cx="1286.26" cy="481.96" r="5.33"/>
+    <circle class="cls-5" cx="1286.26" cy="603.29" r="5.33"/>
+    <circle class="cls-5" cx="1385.66" cy="630.64" r="5.33"/>
+    <path class="cls-3" d="M1658.04,630.64l22-47.53,5.94-157.15s-39.98,143.04-45.57,147.77c-5.59,4.73-72.66,62.24-72.66,62.24l-52.02-79.87,41.27-130.14"/>
+    <circle class="cls-5" cx="1680.66" cy="583.49" r="5.33"/>
+    <circle class="cls-5" cx="1657.92" cy="630.64" r="5.33"/>
+    <circle class="cls-5" cx="1641.17" cy="573.78" r="5.33"/>
+    <circle class="cls-5" cx="1567.67" cy="635.97" r="5.33"/>
+    <circle class="cls-5" cx="1513.69" cy="556.59" r="5.33"/>
+    <polyline class="cls-3" points="1767.13 360.91 1853.94 337.4 1866.15 411.54 1795.16 568.46 1832.24 633.99 1921.31 549.44"/>
+    <circle class="cls-5" cx="1922.29" cy="548.76" r="5.33"/>
+    <circle class="cls-5" cx="1832.71" cy="633.99" r="5.33"/>
+    <circle class="cls-5" cx="1794.15" cy="569.02" r="5.33"/>
+    <circle class="cls-5" cx="1866.5" cy="411.67" r="5.33"/>
+    <circle class="cls-5" cx="1853.63" cy="337.4" r="5.33"/>
+    <circle class="cls-5" cx="1765.01" cy="360.69" r="5.33"/>
+    <circle class="cls-5" cx="1233.22" cy="405.96" r="5.33"/>
+  </g>
+</svg>
