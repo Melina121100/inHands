@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>inHands – Sound</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.2/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.2/addons/p5.sound.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+
+  <style>
+  @font-face{
+    font-family: "GambarinoWeb";
+    src: url("./Gambarino_Complete/Fonts/OTF/Gambarino-Regular.otf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face{
+    font-family: "IBMPlexMonoLocal";
+    src: url("./IBMPlexMono-Italic.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  :root{
+    --bg:#ffffff;
+    --fg:#111111;
+    --muted:#6b6b6b;
+    --line:#bdbdbd;
+    --pad:22px;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    transition: background-color 420ms linear;
+  }
+
+  .page{
+    width:100vw;
+    height:100vh;
+    display:grid;
+    grid-template-columns: 360px 1fr 360px;
+  }
+
+  /* LEFT COLUMN */
+  .col-left{
+    padding: var(--pad);
+    border-right: 1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+
+  .brand{
+    height:100px;
+    display:flex;
+    align-items:flex-start;
+  }
+
+  .brand img{
+    width:100%;
+    height:auto;
+    display:block;
+  }
+
+  .nav{
+    display:flex;
+    flex-direction:row;
+    gap:18px;
+    align-items:flex-start;
+  }
+
+  .nav a{
+    display:inline-block;
+    padding:8px 18px;
+    border:1px solid var(--fg);
+    text-decoration:none;
+    font-size:12px;
+    color: var(--fg);
+    background: transparent;
+    width: 90px;
+    text-align:center;
+
+    font-family:"IBMPlexMonoLocal", monospace;
+    letter-spacing:0.04em;
+    font-weight:400;
+  }
+
+  .nav a:visited,
+  .nav a:active,
+  .nav a:hover{
+    color: var(--fg);
+  }
+
+  .nav a.active{
+    background:var(--fg);
+    color:#ffffff;
+  }
+
+  .divider{
+  height: 6px;
+  margin: 14px 0 18px 0;
+
+  background-image: radial-gradient(circle, var(--line) 1px, transparent 1px);
+  background-size: 6px 6px;   /* distanza tra i punti */
+  background-repeat: repeat-x;
+  background-position: left center;
+}
+
+  .desc{
+    font-size:11px;
+    line-height:1.5;
+    max-width:none;
+    white-space:pre-wrap;
+
+    font-family:"IBMPlexMonoLocal", monospace;
+    letter-spacing:0.04em;
+    font-weight:400;
+  }
+
+  .info-toggle{
+  margin-top:12px;
+  padding:0;
+  background:transparent;
+  border:none;
+  cursor:pointer;
+
+  font-size:12px;
+  color:var(--fg);
+  font-family:"IBMPlexMonoLocal", monospace;
+  letter-spacing:0.04em;
+  font-weight:400;
+
+  align-self: flex-start;   /* ← questo è la chiave */
+  text-align:left;
+}
+
+  .info-toggle:hover{
+    text-decoration: underline;
+  }
+
+  .info-toggle:hover{ text-decoration: underline; }
+
+  /* CENTER COLUMN */
+  .col-center{
+    padding: var(--pad);
+    border-right: 1px solid var(--line);
+    position:block;
+  }
+
+  .sound-stage{
+    height: calc(100vh - (var(--pad) * 2));
+    width:100%;
+    margin-top:14px;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:0;
+  }
+
+  #sound-canvas-holder{
+    position:absolute;
+    inset:0;
+  }
+
+  .sound-overlay{
+  position:absolute;
+  inset:0;
+
+  /* non centrare più */
+  display:block;
+
+  /* patina: toglila del tutto o rendila molto leggera */
+  background: rgba(255,255,255,0.10);  /* cambia a 0.00 per zero patina */
+
+  z-index:10;
+
+  /* così l’overlay NON blocca i click ovunque */
+  pointer-events:none;
+}
+
+.sound-overlay-inner{
+  position:absolute;
+  top:12px;
+  left:12px;
+
+  border:1px solid var(--fg);
+  padding:10px 12px;
+  font-family:"IBMPlexMonoLocal", monospace;
+  font-size:10px;
+  letter-spacing:0.04em;
+  color:var(--fg);
+  background:#fff;
+  cursor:pointer;
+  user-select:none;
+
+  /* il bottone resta cliccabile */
+  pointer-events:auto;
+}
+
+  /* RIGHT COLUMN */
+  .col-right{
+    display:grid;
+    grid-template-rows:1fr 1fr;
+  }
+
+  .panel{
+    padding: var(--pad);
+    position:relative;
+  }
+
+  .panel + .panel{
+    border-top:1px solid var(--line);
+  }
+
+  .panel-box{
+    height:100%;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:stretch;
+    justify-content:stretch;
+  }
+
+  #camera-canvas-holder{
+    position:absolute;
+    inset:0;
+  }
+
+  .panel-center{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+
+    font-family:"IBMPlexMonoLocal", monospace;
+    letter-spacing:0.04em;
+    font-weight:400;
+    font-size:10px;
+    color:var(--muted);
+    opacity:0.92;
+    white-space:pre-line;
+    text-align:center;
+  }
+
+  .explain{
+    font-size:11px;
+    color:var(--muted);
+    line-height:1.5;
+    max-width:320px;
+    padding:28px 10px 8px 10px;
+    text-align:left;
+
+    font-family:"IBMPlexMonoLocal", monospace;
+    letter-spacing:0.04em;
+    font-weight:400;
+  }
+
+  .panel-label{
+    position:absolute;
+    top:8px;
+    left:8px;
+    font-size:10px;
+    text-transform:lowercase;
+    color:var(--muted);
+    pointer-events:none;
+
+    font-family:"IBMPlexMonoLocal", monospace;
+    letter-spacing:0.04em;
+    font-weight:400;
+  }
+
+  /* STATUS */
+  .status{
+    position:fixed;
+    left:12px;
+    bottom:12px;
+    font-size:12px;
+    color:var(--muted);
+    background:rgba(255,255,255,0.9);
+    border:1px solid var(--line);
+    padding:6px 10px;
+
+    font-family:"IBMPlexMonoLocal", monospace;
+    letter-spacing:0.04em;
+    font-weight:400;
+    z-index:50;
+  }
+
+  /* ======================
+     FLOATING INFO LAYER
+     ====================== */
+
+     .info-layer{
+    position:fixed;
+    inset:0;
+    display:none;
+    z-index:200;
+  }
+
+  .info-layer.is-open{
+    display:block;
+  }
+
+  .info-backdrop{
+    position:absolute;
+    inset:0;
+    background:transparent;
+  }
+
+  .info-card{
+  position: fixed;
+  left: 360px;              /* larghezza colonna sinistra */
+  top: 140px;               /* stessa altezza delle altre pagine */
+  background:#fff;
+  border:1px solid var(--fg);
+  padding:36px 40px;
+
+  width: 640px;
+  max-width: 72vw;
+  max-height: 64vh;
+
+  display:flex;
+  flex-direction:column;
+  z-index: 300;
+}
+
+  .info-content{
+    flex: 1 1 auto;
+    overflow:auto;
+
+    font-family:"IBMPlexMonoLocal", monospace;
+    font-size:12px;
+    line-height:1.6;
+    letter-spacing:0.04em;
+    color:var(--fg);
+  }
+
+  .info-content p{
+    margin:0 0 18px 0;
+  }
+
+  .info-close{
+    margin-top:18px;
+    align-self:flex-end;
+  }
+
+
+/* -------------------------
+       EXPLANATION PANEL
+       (scrolla solo il box in basso a destra)
+    ------------------------- */
+    .panel-box-explain{
+  height: 100%;
+  overflow: auto;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;      /* centra orizzontalmente */
+  justify-content: flex-start;  /* ← IMPORTANTISSIMO: in alto */
+
+  padding:0;
+  margin-top: 0px;
+}
+    
+    .explain-inner{
+      width:min(420px, 82%);
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+    }
+    
+    .explain-icons{
+      display:flex;
+      gap:14px;
+      justify-content:center;
+      width:100%;
+    }
+    
+    .explain-icon{
+      width:100px;
+      height:100px;
+      border:1px solid var(--line);
+      background:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    
+    .explain-icon img{
+      width:60px;
+      height:auto;
+      display:block;
+    }
+    
+    .explain-toggle{
+      background:transparent;
+      border:none;
+      cursor:pointer;
+      padding:0;
+      font-family:"IBMPlexMonoLocal", monospace;
+      font-size:12px;
+      letter-spacing:0.04em;
+      font-style:italic;
+      color:var(--fg);
+    }
+    
+    .explain-toggle:hover{ text-decoration:underline; }
+    
+    .explain-body{
+      display:none;
+      width:100%;
+    }
+    
+    .explain-body.is-open{
+      display:block;
+    }
+    
+    .explain-text{
+      width:100%;
+      margin-top: 40px;
+      margin-bottom: 40px;
+      font-family:"IBMPlexMonoLocal", monospace;
+      font-size:11px;
+      line-height:1.55;
+      letter-spacing:0.04em;
+      color:var(--fg);
+    }
+    
+    .explain-text p{
+      margin:0 0 12px 0;
+    }
+
+        /* Blocca completamente lo scroll della pagina */
+html, body{
+  height: 100%;
+  overflow: hidden;
+}
+
+/* La griglia occupa tutta l’altezza e non può generare scroll */
+.page{
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Permette agli elementi interni (come panel-box-explain) di scrollare */
+.col-right,
+.panel,
+.panel-box{
+  min-height: 0;
+}
+
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <aside class="col-left">
+      <div class="brand">
+        <img src="logo3.png" alt="inHands">
+      </div>
+
+      <nav class="nav">
+        <a href="index.html">Text</a>
+        <a class="active" href="sound.html">Sound</a>
+        <a href="space.html">Space</a>
+      </nav>
+
+      <div class="divider"></div>
+
+      <div class="desc">
+This work investigates hand gestures as forms of non-verbal communication.
+Three gestures examine how emotion can
+shape perception and how digital visual communication can reveal and amplify their expressive potential.
+              </div>
+        
+              <button class="info-toggle" id="openInfo" type="button">↓ more info</button>
+            </aside>
+
+    <main class="col-center">
+      <section class="sound-stage" id="soundStage">
+        <div id="sound-canvas-holder"></div>
+
+        <div class="sound-overlay" id="soundOverlay">
+          <div class="sound-overlay-inner" id="soundEnable">click to enable sound</div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="col-right">
+      <section class="panel">
+        <div class="panel-box">
+          <div id="camera-canvas-holder"></div>
+          <div class="panel-center" id="cameraCenterText">show your hand</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-box panel-box-explain">
+          <div class="explain-inner">
+        
+            <div class="explain-icons">
+              <div class="explain-icon"><img src="imgs/open.png" alt="Open Hand"></div>
+              <div class="explain-icon"><img src="imgs/semi.png" alt="Semi Closed"></div>
+              <div class="explain-icon"><img src="imgs/closed.png" alt="Closed"></div>
+            </div>
+        
+            <button class="explain-toggle" id="explainToggle" type="button">Click for explanation ↓</button>
+        
+            <div class="explain-body" id="explainBody" aria-hidden="true">
+              <div class="explain-text">
+                <p>This section follows the same emotional logic as the text dimension. <p>The soundscape, performed and recorded by a violinist, translates each gesture into an acoustic state. Every movement activates a distinct emotional register, while the on-screen visualization amplifies and extends the sensation through motion and rhythm.</p>
+        
+                <br><p><strong>Open Hand → Joy</strong><br>A bright and resonant melody unfolds. The violin opens into warmer tones and fluid phrasing, suggesting expansion and lightness. The visual composition responds with balanced, harmonious movement, reinforcing the feeling of presence and vitality.</p>
+        
+                <p><strong>Semi Closed Hand → Sadness</strong><br>The melody becomes slower and more fragile. Notes stretch and hesitate, evoking melancholy and introspection. On screen, the visual structure fragments and drifts, mirroring the disorientation and subtle instability that often accompany sadness.</p>
+        
+                <p><strong>Closed Fist → Fear</strong><br>A sharper, higher-pitched sound emerges, tense and insistent. The violin compresses into anxious frequencies that suggest urgency and vulnerability. The visualization accelerates and becomes more frenetic, supporting the sensation of pressure and unease.</p>
+              </div>
+            </div>
+        
+          </div>
+        </div>
+      </section>
+    </aside>
+
+  </div>
+
+  <div class="status" id="status">Loading camera…</div>
+
+  <div class="info-layer" id="infoLayer" aria-hidden="true">
+    <div class="info-backdrop" id="infoBackdrop"></div>
+
+    <div class="info-card" id="infoCard" role="dialog" aria-modal="true" aria-label="Project information">
+      <div class="info-content">
+        <p>
+          This project explores the hand as a primary form of expression. Before language, the body already communicates through gesture. Here, digital environments make minimal movements visible, translating them into emotional states.        </p>
+        </p>
+
+        <p>
+          The work unfolds across three dimensions: text, sound and space. Each responds to the same three gestures, open hand, half-closed hand and closed fist, associated with joy, sadness and fear.
+        </p>
+
+        <p>
+          In the textual dimension, gesture alters the legibility and structure of a poem. In the sound dimension, a violin composition shifts in tone and intensity, supported by a reactive visualization. In the spatial dimension, the interface expands, destabilizes or compresses, reflecting how emotion shapes the way space is perceived and inhabited.
+        </p>
+
+        <p>
+          The proposed classification of gestures and emotions remains intentionally open. It serves as a demonstrative framework rather than a universal system, suggesting that meaning can emerge from gesture while remaining multiple and interpretative. </p>
+        </p>
+      </div>
+
+      <button class="info-toggle info-close" id="closeInfo" type="button">↑ less info</button>
+    </div>
+  </div>
+
+  <script src="./sketch.sound.js"></script>
+
+  <script>
+    (function () {
+      const openInfo = document.getElementById("openInfo");
+      const closeInfo = document.getElementById("closeInfo");
+      const infoLayer = document.getElementById("infoLayer");
+      const infoCard = document.getElementById("infoCard");
+      const infoBackdrop = document.getElementById("infoBackdrop");
+    
+      if (!openInfo || !closeInfo || !infoLayer || !infoCard || !infoBackdrop) return;
+    
+      function openLayer(){
+  infoLayer.classList.add("is-open");
+  infoLayer.setAttribute("aria-hidden", "false");
+}
+    
+      function closeLayer(){
+        infoLayer.classList.remove("is-open");
+        infoLayer.setAttribute("aria-hidden", "true");
+      }
+    
+      openInfo.addEventListener("click", openLayer);
+      closeInfo.addEventListener("click", closeLayer);
+      infoBackdrop.addEventListener("click", closeLayer);
+    
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && infoLayer.classList.contains("is-open")) {
+          closeLayer();
+        }
+      });
+    
+      window.addEventListener("resize", () => {
+        if (infoLayer.classList.contains("is-open")) positionCardUnderButton();
+      });
+    
+      window.addEventListener("scroll", () => {
+        if (infoLayer.classList.contains("is-open")) positionCardUnderButton();
+      }, { passive: true });
+    })();
+    </script>
+
+    <script>
+  (function(){
+    const btn = document.getElementById("explainToggle");
+    const body = document.getElementById("explainBody");
+    if (!btn || !body) return;
+  
+    btn.addEventListener("click", () => {
+      const isOpen = body.classList.toggle("is-open");
+      body.setAttribute("aria-hidden", String(!isOpen));
+      if (isOpen) body.scrollTop = 0;
+    });
+  })();
+  </script>
+</body>
+</html>
